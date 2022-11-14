@@ -2,50 +2,37 @@
 
 <head>
   <title>Express</title>
-  <link rel="stylesheet" href="/assets/style.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.2/leaflet.css"
     integrity="sha512-UkezATkM8unVC0R/Z9Kmq4gorjNoFwLMAWR/1yZpINW08I79jEKx/c8NlLSvvimcu7SL8pgeOnynxfRpe+5QpA=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw-src.css"
     integrity="sha512-vJfMKRRm4c4UupyPwGUZI8U651mSzbmmPgR3sdE3LcwBPsdGeARvUM5EcSTg34DK8YIRiIo+oJwNfZPMKEQyug=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="/assets/style.css">
 </head>
 
-<!--Library leaflet(css,js) -->
-
 <body>
-
-  <div class="container">
-    <div class="mission-list">
-      <h1>List Misi</h1>
-      <div>
-        <div>misi 1</div>
-        <div>misi 2</div>
-        <div>misi 3</div>
-        <!--List Misi-->
+  <div class="wrapper">
+    <div class="mission-container">
+      <div class="new-mission">+ Misi Baru</div>
+      <div class="mission-list" id="missions">
       </div>
     </div>
-    <div class="map">
-      <div id="map" style="width: 100%;height: 400px;"></div>
+    <div class="map-container">
+      <div id="map"></div>
     </div>
   </div>
-      <!-- <div id="map" style="width: 100%;height: 400px;"></div> -->
-      <!-- <button type="button" onclick="downloadGeoJSON()">CLick ME MF</button> -->
-
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.2/leaflet.js"
     integrity="sha512-KMraOVM0qMVE0U1OULTpYO4gg5MZgazwPAPyMQWfOkEshpwlLQFCHZ/0lBXyviDNVL+pBGwmeXQnuvGK8Fscvg=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"
     integrity="sha512-ozq8xQKq6urvuU6jNgkfqAmT7jKN2XumbrX1JiB3TnF7tI48DPI4Gy1GXKD/V3EExgAs1V+pRO7vwtS1LHg0Gw=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"
     integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-
   <script src="./assets/script.js"></script>
 </body>
 
