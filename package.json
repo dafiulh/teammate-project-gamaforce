@@ -1,10 +1,13 @@
 {
-  "name": "backend",
+  "name": "teammate-project-gamaforce",
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./server",
-    "dev": "nodemon ./server"
+    "start": "npm run build:front && node ./server",
+    "dev": "concurrently -n back,front \"npm:dev:back\" \"npm:dev:front\"",
+    "dev:back": "nodemon ./server --dev",
+    "dev:front": "vite ./frontend",
+    "build:front": "vite build ./frontend"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
@@ -13,6 +16,8 @@
     "morgan": "~1.9.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.20"
+    "concurrently": "^7.5.0",
+    "nodemon": "^2.0.20",
+    "vite": "^3.2.4"
   }
 }

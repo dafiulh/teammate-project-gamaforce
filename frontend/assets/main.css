@@ -1,7 +1,8 @@
 body {
-  margin: 2rem 2.5rem;
+  margin: 1rem 1.25rem;
   font-family: "Inter", Helvetica, Arial, sans-serif;
   font-size: 16px;
+  background-color: #f5f5f5;
 }
 
 .wrapper {
@@ -10,7 +11,8 @@ body {
 }
 
 .mission-container {
-  background-color: #F0EBCE;
+  background-color: #23315a;
+  color: #f5f5f5;
   flex-basis: 18rem;
   flex-grow: 0;
   margin-right: 1rem;
@@ -22,7 +24,8 @@ body {
 }
 
 .mission-container .new-mission {
-  background-color: #c4a877;
+  background-color: #fdce11;
+  color: #23315a;
   margin-bottom: 1.5rem;
   padding: .75rem 1rem;
   border-radius: .5rem;

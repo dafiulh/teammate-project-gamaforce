@@ -10,7 +10,10 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+
+if (process.argv[2] !== '--dev') {
+  app.use(express.static(path.join(__dirname, 'frontend/dist')));
+}
 
 app.use('/api', indexRouter);
 

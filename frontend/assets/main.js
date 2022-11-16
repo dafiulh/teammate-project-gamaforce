@@ -1,3 +1,5 @@
+import './main.css';
+
 // BEGIN-DATABASE
 const missionsData = {
   '101': { name: 'nyoba', data: {"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"LineString","coordinates":[[110.373491,-7.73567],[110.417636,-7.771751],[110.399772,-7.778728]]}},{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[110.3405,-7.74401],[110.39217,-7.795746],[110.333118,-7.788939],[110.376892,-7.75337],[110.3405,-7.74401]]]}},{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[110.372429,-7.796427],[110.372429,-7.74384],[110.446587,-7.74384],[110.446587,-7.796427],[110.372429,-7.796427]]]}},{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[110.308056,-7.746222]}},{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[110.361786,-7.719331]}},{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[110.313892,-7.798979]}},{"type":"Feature","properties":{},"geometry":{"type":"LineString","coordinates":[[110.367279,-7.815656],[110.453281,-7.821101],[110.403671,-7.832672]]}}]} },
