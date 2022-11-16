@@ -16,7 +16,9 @@ body {
   margin-right: 1rem;
   padding: 1.5rem;
   border-radius: .5rem;
-  font-size: 1.25rem;
+  font-size: 1.15rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .mission-container .new-mission {
@@ -30,11 +32,33 @@ body {
   cursor: pointer;
 }
 
+.mission-container .active-mission {
+  margin-top: auto;
+  font-weight: 700;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.mission-container .active-mission > :last-child {
+  display: flex;
+  align-items: center;
+}
+
+.mission-container .active-mission > :last-child > div {
+  margin-left: .5rem;
+  cursor: pointer;
+}
+
 .mission-list .mission {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   margin-bottom: .25rem;
+}
+
+.mission-list .mission .mission-name {
+  cursor: pointer;
 }
 
 .mission-list .mission .mission-actions {
@@ -43,7 +67,7 @@ body {
 }
 
 .mission-list .mission .mission-actions > div {
-  margin-left: .4rem;
+  margin-left: .5rem;
   cursor: pointer;
 }
 
