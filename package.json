@@ -6,14 +6,20 @@
     "start": "npm run build:front && node ./server",
     "dev": "concurrently -n back,front \"npm:dev:back\" \"npm:dev:front\"",
     "dev:back": "nodemon ./server --dev",
-    "dev:front": "vite ./frontend",
-    "build:front": "vite build ./frontend"
+    "dev:front": "cd ./frontend && vite",
+    "build:front": "cd ./frontend && vite build"
   },
   "dependencies": {
+    "alpinejs": "^3.10.5",
+    "autoprefixer": "^10.4.13",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "~4.16.1",
-    "morgan": "~1.9.1"
+    "leaflet": "^1.9.2",
+    "leaflet-draw": "^1.0.4",
+    "morgan": "~1.9.1",
+    "postcss": "^8.4.19",
+    "tailwindcss": "^3.2.4"
   },
   "devDependencies": {
     "concurrently": "^7.5.0",

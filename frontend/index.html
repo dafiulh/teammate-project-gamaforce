@@ -1,39 +1,50 @@
 <html>
 
 <head>
-  <title>GAMAFORCE</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.2/leaflet.css"
-    integrity="sha512-UkezATkM8unVC0R/Z9Kmq4gorjNoFwLMAWR/1yZpINW08I79jEKx/c8NlLSvvimcu7SL8pgeOnynxfRpe+5QpA=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw-src.css"
-    integrity="sha512-vJfMKRRm4c4UupyPwGUZI8U651mSzbmmPgR3sdE3LcwBPsdGeARvUM5EcSTg34DK8YIRiIo+oJwNfZPMKEQyug=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <title>GAMAFORCE Teammate Project</title>
 </head>
 
-<body>
-  <div class="wrapper">
-    <div class="mission-container">
-      <div class="new-mission">+ New Mission</div>
-      <div class="mission-list">
+<body class="font-body mx-5 my-4 bg-gmf-white">
+  <div x-data="main" class="flex h-full select-none">
+    <div class="flex flex-col text-lg text-gmf-white basis-72 grow-0 mr-4">
+      <div class="flex justify-between bg-gmf-blue p-6 mb-4 rounded-lg font-bold">
+        <div x-text="missions[activeMission]?.name"></div>
+        <div class="flex items-center space-x-2">
+          <div class="cursor-pointer" @click="saveActiveMission()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-save"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+          </div>
+          <div class="cursor-pointer" @click="setActiveMission(null)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </div>
+        </div>
       </div>
-      <div class="active-mission">
+      <div class="grow bg-gmf-blue p-6 rounded-lg">
+        <div>
+          <template x-for="missionId in missionIdList" :key="missionId">
+            <div class="flex justify-between mb-1">
+              <div class="cursor-pointer" x-text="missions[missionId]?.name" @click="setActiveMission(missionId)"></div>
+              <div class="flex items-center space-x-2">
+                <div class="cursor-pointer" @click="renameMission(missionId)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                </div>
+                <div class="cursor-pointer" @click="deleteMission(missionId)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+        <div class="bg-gmf-yellow text-gmf-blue font-bold mt-auto px-4 py-3 border-0 rounded-lg text-center cursor-pointer" 
+          @click="addNewMission()"
+        >
+          + New Mission
+        </div>
       </div>
     </div>
-    <div class="map-container">
-      <div id="map"></div>
+    <div class="grow">
+      <div id="map" class="w-full h-full"></div>
     </div>
   </div>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.2/leaflet.js"
-    integrity="sha512-KMraOVM0qMVE0U1OULTpYO4gg5MZgazwPAPyMQWfOkEshpwlLQFCHZ/0lBXyviDNVL+pBGwmeXQnuvGK8Fscvg=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"
-    integrity="sha512-ozq8xQKq6urvuU6jNgkfqAmT7jKN2XumbrX1JiB3TnF7tI48DPI4Gy1GXKD/V3EExgAs1V+pRO7vwtS1LHg0Gw=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"
-    integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script type="module" src="./assets/main.js"></script>
 </body>
 
