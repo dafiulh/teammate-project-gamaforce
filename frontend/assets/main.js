@@ -13,7 +13,7 @@ const missionsStoredInDB = {
 };
 // END-DATABASE
 
-const map = L.map('map', { drawControl: true }).setView([-7.770905, 110.377637], 13);
+const map = L.map('map').setView([-7.770905, 110.377637], 13);
 
 L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -21,6 +21,14 @@ L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 
 const layers = new L.geoJSON();
 layers.addTo(map);
+
+const drawControl = new L.Control.Draw({
+  edit: { featureGroup: layers }
+});
+
+setTimeout(() => {
+  map.invalidateSize();
+});
 
 const mainData = {
   missions: missionsStoredInDB,
@@ -80,23 +88,34 @@ const mainData = {
 };
 
 mainData.init = function() {
-  this.$watch('activeMission', () => {
+  this.$watch('activeMission', (value, oldValue) => {
     this.unsavedChanges = false;
     layers.clearLayers();
 
-    if (this.activeMission && this.missions[this.activeMission].geojson) {
-      layers.addData(this.missions[this.activeMission].geojson);
+    if (value && this.missions[value].geojson) {
+      layers.addData(this.missions[value].geojson);
     }
+
+    if (!oldValue && value) map.addControl(drawControl);
+    if (oldValue && !value) map.removeControl(drawControl);
   });
+};
+
+const unsavedTrue = () => {
+  if (!mainData.unsavedChanges) {
+    console.log('dsfdsf') //////////
+    
+
+    // mainData.unsavedChanges = true;
+  }
 };
 
 map.on("draw:created", (e) => {
   layers.addLayer(e.layer);
-
-  if (!mainData.unsavedChanges) {
-    mainData.unsavedChanges = true;
-  }
+  unsavedTrue();
 });
+map.on("draw:edited", unsavedTrue);
+map.on("draw:deleted", unsavedTrue);
 
 Alpine.data('main', () => mainData);
 Alpine.start();
