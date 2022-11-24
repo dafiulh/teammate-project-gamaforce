@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "npm run build:front && node ./server",
+    "start": "npm run build:front && node ./backend/server",
     "dev": "concurrently -n back,front \"npm:dev:back\" \"npm:dev:front\"",
-    "dev:back": "nodemon ./server --dev",
+    "dev:back": "nodemon ./backend/server --dev",
     "dev:front": "cd ./frontend && vite",
     "build:front": "cd ./frontend && vite build"
   },
