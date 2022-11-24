@@ -4,6 +4,6 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-[x-cloak] {
-  display: none!important;
+.spinner {
+  @apply animate-spin border-2 border-white border-t-transparent rounded-full;
 }

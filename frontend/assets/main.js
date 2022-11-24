@@ -5,14 +5,6 @@ import 'leaflet-draw/dist/leaflet.draw.css';
 import Alpine from 'alpinejs';
 import './styles.css';
 
-// BEGIN-DATABASE
-const missionsStoredInDB = {
-  '101': { name: 'nyoba', geojson: {"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"LineString","coordinates":[[110.373491,-7.73567],[110.417636,-7.771751],[110.399772,-7.778728]]}},{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[110.3405,-7.74401],[110.39217,-7.795746],[110.333118,-7.788939],[110.376892,-7.75337],[110.3405,-7.74401]]]}},{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[110.372429,-7.796427],[110.372429,-7.74384],[110.446587,-7.74384],[110.446587,-7.796427],[110.372429,-7.796427]]]}},{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[110.308056,-7.746222]}},{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[110.361786,-7.719331]}},{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[110.313892,-7.798979]}},{"type":"Feature","properties":{},"geometry":{"type":"LineString","coordinates":[[110.367279,-7.815656],[110.453281,-7.821101],[110.403671,-7.832672]]}}]} },
-  '102': { name: 'Shapes', geojson: {"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[110.316467,-7.721884],[110.303078,-7.758987],[110.369682,-7.764263],[110.316467,-7.721884]]]}},{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[110.382042,-7.760008],[110.382042,-7.716267],[110.411568,-7.716267],[110.411568,-7.760008],[110.382042,-7.760008]]]}},{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[110.389595,-7.782472]}},{"type":"Feature","properties":{},"geometry":{"type":"LineString","coordinates":[[110.314751,-7.8],[110.378094,-7.768007],[110.37466,-7.750988],[110.369511,-7.690925],[110.447788,-7.697053],[110.434742,-7.770238]]}},{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[110.497742,-7.788108]}},{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[110.43869,-7.607079]}},{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[110.34668,-7.825813]}},{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[110.463066,-7.817985]}}]} },
-  '103': { name: 'Empty', geojson: {"type":"FeatureCollection","features":[]} }
-};
-// END-DATABASE
-
 const map = L.map('map').setView([-7.770905, 110.377637], 13);
 
 L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -31,12 +23,42 @@ setTimeout(() => {
 });
 
 const mainData = {
-  missions: missionsStoredInDB,
+  isLoading: false,
+  missions: {},
   get missionIdList() {
-    return Object.keys(this.missions).sort((a, b) => b - a);
+    return Object.keys(this.missions).sort();
   },
-  activeMission: null, // don't change the value directly
-  unsavedChanges: false,
+  // ambil daftar id & nama misi yang tersimpan di DB
+  async loadMissions() {
+    const fetchDbRes = await fetch('/api/list');
+    const missionIdList = await fetchDbRes.json();
+    const missionList = {};
+
+    for (let id in missionIdList) {
+      missionList[id] = {
+        name: missionIdList[id],
+        loaded: false
+      };
+    }
+
+    this.missions = missionList;
+    this.missionsLoaded = true;
+  },
+  missionsLoaded: false,
+  // ambil data suatu misi dari DB
+  async loadMissionData(missionId) {
+    this.isLoading = true;
+    const fetchDbRes = await fetch('/api/get/' + missionId);
+    const missionData = await fetchDbRes.json();
+
+    this.missions[missionId] = {
+      ...this.missions[missionId],
+      ...missionData,
+      loaded: true
+    };
+    this.isLoading = false;
+  },
+  activeMission: null, // jangan ubah value secara langsung
   setActiveMission(id) {
     if (this.unsavedChanges) {
       const confirmClose = confirm('There are unsaved changes, are you sure want to close?');
@@ -49,73 +71,112 @@ const mainData = {
       this.activeMission = null;
     }
   },
-  saveActiveMission() {
-    // TODO DB
-    this.missions[this.activeMission].geojson = layers.toGeoJSON();
-    this.unsavedChanges = false;
-
-    alert('Mission saved!');
-  },
-  addNewMission() {
-    const missionName = prompt('Enter the mission name');
-    const missionId = Date.now();
-
-    if (missionName) {
-      // TODO DB
-      this.missions[missionId] = {
-        name: missionName,
-        geojson: null
-      };
-      this.setActiveMission(missionId);
+  unsavedChanges: false,
+  newUnsavedChanges() {
+    if (!this.unsavedChanges) {
+      this.unsavedChanges = true;
     }
   },
-  renameMission(id) {
-    // TODO DB
-    const newMissionName = prompt('Enter the new mission name');
-    this.missions[id].name = newMissionName;
+  async saveActiveMission() {
+    const newGeoJSON = JSON.stringify(layers.toGeoJSON());
+    
+    this.isLoading = true;
+    await fetch('/api/update/' + this.activeMission, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ geojson: newGeoJSON })
+    });
+
+    this.missions[this.activeMission].geojson = newGeoJSON;
+    this.unsavedChanges = false;
+    this.isLoading = false;
   },
-  deleteMission(id) {
+  async addNewMission() {
+    const missionName = prompt('Enter the mission name');
+    if (!missionName) return;
+
+    this.isLoading = true;
+    const fetchDbRes = await fetch('/api/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: missionName })
+    });
+    const { id: missionId } = await fetchDbRes.json();
+
+    this.missions[missionId] = {
+      name: missionName
+    };
+    this.setActiveMission(missionId);
+    this.isLoading = false;
+  },
+  async renameMission(id) {
+    const newMissionName = prompt('Enter the new mission name');
+    if (!newMissionName) return;
+
+    this.isLoading = true;
+    await fetch('/api/update/' + id, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: newMissionName })
+    });
+
+    this.missions[id].name = newMissionName;
+    this.isLoading = false;
+  },
+  async deleteMission(id) {
     const confirmDelete = confirm('Are you sure want to delete this mission?');
     if (!confirmDelete) return;
+
+    this.isLoading = true;
+    await fetch('/api/delete/' + id, {
+      method: 'DELETE'
+    });
 
     if (this.activeMission == id) {
       this.setActiveMission(null);
     }
 
-    // TODO DB
     delete this.missions[id];
+    this.isLoading = false;
   }
 };
 
-mainData.init = function() {
-  this.$watch('activeMission', (value, oldValue) => {
+mainData.init = async function() {
+  await this.loadMissions();
+
+  this.$watch('activeMission', async (id, oldId) => {
     this.unsavedChanges = false;
     layers.clearLayers();
 
-    if (value && this.missions[value].geojson) {
-      layers.addData(this.missions[value].geojson);
-    }
+    if (!oldId && id) map.addControl(drawControl);
+    if (oldId && !id) map.removeControl(drawControl);
 
-    if (!oldValue && value) map.addControl(drawControl);
-    if (oldValue && !value) map.removeControl(drawControl);
+    if (id) {
+      if (!this.missions[id].loaded) {        
+        await this.loadMissionData(id);
+      }
+
+      if (this.missions[id].geojson) {
+        layers.addData(
+          JSON.parse(this.missions[id].geojson)
+        );
+      }
+    }
+  });
+
+  map.on("draw:created", (e) => {
+    layers.addLayer(e.layer);
+    this.newUnsavedChanges();
+  });
+  
+  map.on("draw:edited", () => {
+    this.newUnsavedChanges();
+  });
+  
+  map.on("draw:deleted", () => {
+    this.newUnsavedChanges();
   });
 };
-
-const unsavedTrue = () => {
-  if (!mainData.unsavedChanges) {
-    console.log('dsfdsf') //////////
-    
-
-    // mainData.unsavedChanges = true;
-  }
-};
-
-map.on("draw:created", (e) => {
-  layers.addLayer(e.layer);
-  unsavedTrue();
-});
-map.on("draw:edited", unsavedTrue);
-map.on("draw:deleted", unsavedTrue);
 
 Alpine.data('main', () => mainData);
 Alpine.start();

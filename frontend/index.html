@@ -3,12 +3,12 @@
   <title>GAMAFORCE Teammate Project</title>
 </head>
 <body class="font-body bg-gmf-white">
-  <div x-data="main" class="flex h-full select-none" x-cloak>
+  <div x-data="main" class="flex h-full select-none">
     <div class="flex flex-col basis-[19rem] grow-0 bg-gmf-blue text-lg text-gmf-white px-6 py-7">
       <div class="flex justify-between" :class="{ 'font-bold': activeMission }">
         <div x-text="activeMission ? missions[activeMission]?.name : 'No active mission'"></div>
         <div x-show="activeMission" class="flex items-center space-x-2">
-          <div class="cursor-pointer" @click="saveActiveMission()">
+          <div class="cursor-pointer" :class="{ 'text-slate-500 cursor-default': !unsavedChanges }" @click="unsavedChanges && saveActiveMission()">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-save"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
           </div>
           <div class="cursor-pointer" @click="setActiveMission(null)">
@@ -17,7 +17,9 @@
         </div>
       </div>
       <hr class="my-5 opacity-30">
-      <div>
+      <div x-show="!missionsLoaded">...</div>
+      <div x-show="missionsLoaded && !missionIdList.length">No missions added yet</div>
+      <div x-show="missionsLoaded && missionIdList.length">
         <template x-for="missionId in missionIdList" :key="missionId">
           <div class="flex justify-between mb-2">
             <div class="cursor-pointer" x-text="missions[missionId]?.name" @click="setActiveMission(missionId)"></div>
@@ -32,11 +34,13 @@
           </div>
         </template>
       </div>
-      <div x-text="unsavedChanges ? 'unsaved': 'saved'"></div> <!--///////////  -->
-      <div class="bg-gmf-yellow text-gmf-blue font-bold mt-auto px-4 py-3 border-0 rounded-lg text-center cursor-pointer" 
-        @click="addNewMission()"
-      >
-        + New Mission
+      <div class="flex flex-col mt-auto">
+        <div x-show="isLoading" class="spinner w-5 h-5 mb-6 mr-2 self-end"></div>
+        <div class="bg-gmf-yellow text-gmf-blue font-bold px-4 py-3 border-0 rounded-lg text-center cursor-pointer" 
+          @click="addNewMission()"
+        >
+          + New Mission
+        </div>
       </div>
     </div>
     <div class="grow">
