@@ -13,6 +13,7 @@ app.use(cookieParser());
 
 if (process.argv[2] !== '--dev') {
   app.use(express.static(path.join(__dirname, '../frontend/dist')));
+  app.use(express.static(path.join(__dirname, '../node_modules/leaflet-draw/dist/images')));
 }
 
 app.use('/api', indexRouter);

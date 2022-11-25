@@ -5,9 +5,12 @@ import 'leaflet-draw/dist/leaflet.draw.css';
 import Alpine from 'alpinejs';
 import './styles.css';
 
+// https://github.com/Leaflet/Leaflet.draw/issues/1026
+window.type = true;
+
 const map = L.map('map').setView([-7.770905, 110.377637], 13);
 
-L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+const osmTile = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
@@ -17,6 +20,24 @@ layers.addTo(map);
 const drawControl = new L.Control.Draw({
   edit: { featureGroup: layers }
 });
+
+L.control.layers({
+  'osm': osmTile,
+  'google': L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+    attribution: 'Map data &copy; Google',
+    subdomains:['mt0','mt1','mt2','mt3']
+  }),
+  'satellite': L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
+    attribution: 'Map data &copy; Google',
+    subdomains:['mt0','mt1','mt2','mt3']
+  }),
+  'terrain': L.tileLayer('http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}', {
+    attribution: 'Map data &copy; Google',
+    subdomains:['mt0','mt1','mt2','mt3']
+  })
+}, {
+  'layers': layers
+}, { collapsed: false }).addTo(map);
 
 setTimeout(() => {
   map.invalidateSize();
